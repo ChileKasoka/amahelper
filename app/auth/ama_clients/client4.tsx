@@ -1,73 +1,102 @@
-import { useState } from "react";
+// app/auth/ama_clients/client4.tsx
+import React, { useState } from "react";
 import {
   Alert,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
   TouchableWithoutFeedback,
-  Keyboard,
+  View,
 } from "react-native";
-import { registerUser } from "../../../api/auth";
-import { useAuth } from "../../../context/AuthContext";
+import { ClientPayload, registerUser } from "../../../api/auth";
+import { StepProps } from "../../../types/registration";
 
-export default function RegisterAddress() {
-  const { registerData, clearRegisterData } = useAuth();
-
-  const [address, setAddress] = useState("");
-  const [city, setCity] = useState("");
-  const [province, setProvince] = useState("");
+const ClientStep4: React.FC<StepProps> = ({
+  back,
+  formData,
+  setFormData,
+}) => {
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    if (
-      !registerData.phone ||
-      !registerData.otp ||
-      !registerData.firstName ||
-      !registerData.lastName ||
-      !registerData.email ||
-      !registerData.nrc ||
-      !registerData.password
-    ) {
-      Alert.alert(
-        "Error",
-        "Missing registration data. Please restart registration."
-      );
-      return;
-    }
-
-    if (!address || !city || !province) {
-      Alert.alert("Error", "Please fill all address fields");
-      return;
-    }
-
-    const payload = {
-      phone: registerData.phone,
-      otp: registerData.otp,
-      firstName: registerData.firstName,
-      lastName: registerData.lastName,
-      email: registerData.email,
-      nrc: registerData.nrc,
-      password: registerData.password,
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      nrc,
+      phone,
 
       address,
       city,
       province,
+      postalCode,
+      alternativePhone,
+
+      clientType,
+      notes,
+    } = formData;
+
+    if (
+      !firstName ||
+      !lastName ||
+      !email ||
+      !password ||
+      !nrc ||
+      !address ||
+      !city ||
+      !province
+    ) {
+      Alert.alert("Error", "Please fill in all required fields");
+      return;
+    }
+
+    const payload: ClientPayload = {
+      firstName,
+      lastName,
+      email,
+      password,
+      phone,
+
+      nrc,
+
+      address,
+      city,
+      province,
+      postalCode,
+      alternativePhone,
+
+      clientType,
+      notes,
 
       userType: "CLIENT",
       role: "CLIENT",
     };
 
     try {
-      await registerUser(payload);
+      setLoading(true);
 
-      clearRegisterData();
+      const response = await registerUser(payload);
 
-      Alert.alert("Success", "Registration Complete");
-    } catch (err) {
-      Alert.alert("Error", "Registration failed");
+      console.log("REGISTER SUCCESS:", response);
+
+      Alert.alert("Success", "Registration completed successfully!");
+
+      setFormData?.({});
+    } catch (err: any) {
+      console.error("REGISTER ERROR:", err);
+
+      Alert.alert(
+        "Registration Failed",
+        err?.message || "Something went wrong"
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -86,41 +115,108 @@ export default function RegisterAddress() {
 
           <TextInput
             placeholder="Address"
-            value={address}
-            onChangeText={setAddress}
+            value={formData.address || ""}
+            onChangeText={(text) =>
+              setFormData?.({ ...formData, address: text })
+            }
             style={styles.input}
-            placeholderTextColor="#6b7280"
           />
 
           <TextInput
             placeholder="City"
-            value={city}
-            onChangeText={setCity}
+            value={formData.city || ""}
+            onChangeText={(text) =>
+              setFormData?.({ ...formData, city: text })
+            }
             style={styles.input}
-            placeholderTextColor="#6b7280"
           />
 
           <TextInput
             placeholder="Province"
-            value={province}
-            onChangeText={setProvince}
+            value={formData.province || ""}
+            onChangeText={(text) =>
+              setFormData?.({ ...formData, province: text })
+            }
             style={styles.input}
-            placeholderTextColor="#6b7280"
           />
 
-          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-            <Text style={styles.buttonText}>Submit Registration</Text>
-          </TouchableOpacity>
+          <TextInput
+            placeholder="Postal Code (Optional)"
+            value={formData.postalCode || ""}
+            onChangeText={(text) =>
+              setFormData?.({ ...formData, postalCode: text })
+            }
+            style={styles.input}
+          />
+
+          <TextInput
+            placeholder="Alternative Phone (Optional)"
+            value={formData.alternativePhone || ""}
+            onChangeText={(text) =>
+              setFormData?.({ ...formData, alternativePhone: text })
+            }
+            style={styles.input}
+            keyboardType="phone-pad"
+          />
+
+          <TextInput
+            placeholder="Client Type (Optional)"
+            value={formData.clientType || ""}
+            onChangeText={(text) =>
+              setFormData?.({ ...formData, clientType: text })
+            }
+            style={styles.input}
+          />
+
+          <TextInput
+            placeholder="Notes (Optional)"
+            value={formData.notes || ""}
+            onChangeText={(text) =>
+              setFormData?.({ ...formData, notes: text })
+            }
+            style={[styles.input, { height: 90 }]}
+            multiline
+          />
+
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <TouchableOpacity
+              onPress={back}
+              style={[
+                styles.button,
+                {
+                  backgroundColor: "#6b7280",
+                  flex: 1,
+                  marginRight: 10,
+                },
+              ]}
+            >
+              <Text style={styles.buttonText}>Back</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={handleSubmit}
+              style={[styles.button, { flex: 1 }]}
+              disabled={loading}
+            >
+              <Text style={styles.buttonText}>
+                {loading ? "Submitting..." : "Submit"}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
-}
+};
+
+export default ClientStep4;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5", // light theme background
+    backgroundColor: "#f5f5f5",
   },
   scrollContainer: {
     padding: 20,

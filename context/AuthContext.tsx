@@ -1,15 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
 
 /* ================= TYPES ================= */
 
-type User = {
+// User type
+export type User = {
   id?: string;
   firstName?: string;
   lastName?: string;
@@ -19,30 +14,81 @@ type User = {
   userType?: string;
 };
 
-type RegisterData = {
-  // Step 1
+// ====== Registration Types ======
+
+// Client Registration
+export interface ClientRegistration {
   phone?: string;
-
-  // Step 2
   otp?: string;
-
-  // Step 3
   firstName?: string;
   lastName?: string;
   email?: string;
   nrc?: string;
   password?: string;
 
-  // Step 4
   address?: string;
   city?: string;
   province?: string;
   postalCode?: string;
   alternativePhone?: string;
   notes?: string;
-};
 
-type AuthContextType = {
+  userType?: "CLIENT" | "HELPER" | "COMPANY_ADMIN";
+  role?: "CLIENT";
+}
+
+// Helper / Cleaner Registration
+export interface HelperRegistration {
+  phone?: string;
+  otp?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  nrc?: string;
+  password?: string;
+
+  address?: string;
+  city?: string;
+  province?: string;
+  postalCode?: string;
+  gender?: "MALE" | "FEMALE";
+  employmentType?: "FULL_TIME" | "PART_TIME";
+  services?: string[];
+  baseSalary?: number;
+  commissionRate?: number;
+
+  userType?: "HELPER";
+  role?: "HELPER";
+}
+
+// Company Registration
+export interface CompanyRegistration {
+  companyName?: string;
+  companyType?: "PRIVATE" | "GOVERNMENT" | "NGO";
+  registrationNumber?: string;
+  companyEmail?: string;
+  companyPhone?: string;
+  companyAddress?: string;
+
+  adminFirstName?: string;
+  adminLastName?: string;
+  adminEmail?: string;
+  adminPassword?: string;
+  adminPhone?: string;
+  adminNrc?: string;
+
+  latitude?: number;
+  longitude?: number;
+
+  userType?: "COMPANY_ADMIN";
+  role?: "ADMIN";
+}
+
+// Generic register data union
+export type RegisterData = Partial<ClientRegistration & HelperRegistration & CompanyRegistration>;
+
+// Auth Context type
+export interface AuthContextType {
   user: User | null;
   token: string | null;
   loading: boolean;
@@ -55,7 +101,7 @@ type AuthContextType = {
   registerData: RegisterData;
   setRegisterData: React.Dispatch<React.SetStateAction<RegisterData>>;
   clearRegisterData: () => void;
-};
+}
 
 /* ================= CONTEXT ================= */
 
@@ -65,11 +111,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-
-  if (!context) {
-    throw new Error("useAuth must be used inside AuthProvider");
-  }
-
+  if (!context) throw new Error("useAuth must be used inside AuthProvider");
   return context;
 };
 
@@ -83,41 +125,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [registerData, setRegisterData] = useState<RegisterData>({});
 
   /* ================= LOAD AUTH ================= */
-
   useEffect(() => {
     const loadAuth = async () => {
       try {
         const storedToken = await AsyncStorage.getItem("token");
         const storedUser = await AsyncStorage.getItem("user");
 
-        if (storedToken) {
-          setToken(storedToken);
-
-          if (storedUser) {
-            setUser(JSON.parse(storedUser));
-          }
-        }
+        if (storedToken) setToken(storedToken);
+        if (storedUser) setUser(JSON.parse(storedUser));
       } catch (err) {
         console.log("Auth load error:", err);
       } finally {
         setLoading(false);
       }
     };
-
     loadAuth();
   }, []);
 
   /* ================= LOGIN ================= */
-
   const login = async (token: string, userData?: User) => {
     try {
       await AsyncStorage.setItem("token", token);
-
       if (userData) {
         await AsyncStorage.setItem("user", JSON.stringify(userData));
         setUser(userData);
       }
-
       setToken(token);
     } catch (err) {
       console.log("Login error:", err);
@@ -125,15 +157,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   /* ================= LOGOUT ================= */
-
   const logout = async () => {
     try {
       await AsyncStorage.removeItem("token");
       await AsyncStorage.removeItem("user");
-
       setToken(null);
       setUser(null);
-
       clearRegisterData();
     } catch (err) {
       console.log("Logout error:", err);
@@ -141,13 +170,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   /* ================= CLEAR REGISTRATION ================= */
-
-  const clearRegisterData = () => {
-    setRegisterData({});
-  };
+  const clearRegisterData = () => setRegisterData({});
 
   /* ================= PROVIDER ================= */
-
   return (
     <AuthContext.Provider
       value={{

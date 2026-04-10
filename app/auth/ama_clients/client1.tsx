@@ -1,42 +1,40 @@
 // app/auth/ama_clients/client1.tsx
-import { useRouter } from "expo-router";
-import { useState } from "react";
+import React from "react";
 import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { useAuth } from "../../../context/AuthContext";
+import { StepProps } from "../../../types/registration";
 
-export default function Client1() {
-  const router = useRouter();
-  const { setRegisterData } = useAuth();
-
-  const [phone, setPhone] = useState("");
-
+const ClientStep1: React.FC<StepProps> = ({ next, formData, setFormData }) => {
   const handleNext = () => {
-    if (!phone) {
+    if (!formData.phone) {
       Alert.alert("Error", "Enter phone number");
       return;
     }
-
-    setRegisterData((prev) => ({ ...prev, phone }));
-    router.push("/auth/ama_clients/client2");
+    next?.(); // move to the next step
   };
 
   return (
-    <View style={{
-      flex: 1,
-      backgroundColor: "#f9fafb", // light background
-      justifyContent: "center",
-      padding: 20,
-    }}>
-      <Text style={{
-        fontSize: 24,
-        fontWeight: "bold",
-        marginBottom: 20,
-        color: "#111827"
-      }}>Enter Your Phone</Text>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: "#f9fafb",
+        justifyContent: "center",
+        padding: 20,
+      }}
+    >
+      <Text
+        style={{
+          fontSize: 24,
+          fontWeight: "bold",
+          marginBottom: 20,
+          color: "#111827",
+        }}
+      >
+        Enter Your Phone
+      </Text>
 
       <TextInput
-        value={phone}
-        onChangeText={setPhone}
+        value={formData.phone || ""}
+        onChangeText={(text) => setFormData({ ...formData, phone: text })}
         placeholder="097XXXXXXX"
         keyboardType="phone-pad"
         style={{
@@ -58,8 +56,12 @@ export default function Client1() {
           alignItems: "center",
         }}
       >
-        <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>Continue</Text>
+        <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>
+          Continue
+        </Text>
       </TouchableOpacity>
     </View>
   );
-}
+};
+
+export default ClientStep1;

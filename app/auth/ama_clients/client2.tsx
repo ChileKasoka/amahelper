@@ -1,41 +1,31 @@
-import { useRouter } from "expo-router";
-import { useState } from "react";
+// app/auth/ama_clients/client2.tsx
+import React from "react";
 import {
   Alert,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
   TouchableWithoutFeedback,
-  Keyboard,
+  View,
 } from "react-native";
-import { useAuth } from "../../../context/AuthContext";
+import { StepProps } from "../../../types/registration";
 
-export default function Client3() {
-  const router = useRouter();
-  const { registerData, setRegisterData } = useAuth();
-
-  const [firstName, setFirstName] = useState(registerData.firstName || "");
-  const [lastName, setLastName] = useState(registerData.lastName || "");
-  const [email, setEmail] = useState(registerData.email || "");
-
+const ClientStep2: React.FC<StepProps> = ({
+  next,
+  back,
+  formData,
+  setFormData,
+}) => {
   const handleNext = () => {
-    if (!firstName || !lastName || !email) {
+    if (!formData.firstName || !formData.lastName || !formData.email) {
       Alert.alert("Error", "Fill all fields");
       return;
     }
-
-    setRegisterData((prev) => ({
-      ...prev,
-      firstName,
-      lastName,
-      email,
-    }));
-
-    router.push("/auth/ama_clients/client3");
+    next?.();
   };
 
   return (
@@ -44,7 +34,6 @@ export default function Client3() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
     >
-      {/* Tap outside to dismiss keyboard */}
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <ScrollView
           contentContainerStyle={{
@@ -60,8 +49,10 @@ export default function Client3() {
 
           <TextInput
             placeholder="First Name"
-            value={firstName}
-            onChangeText={setFirstName}
+            value={formData.firstName || ""}
+            onChangeText={(text) =>
+              setFormData({ ...formData, firstName: text })
+            }
             style={{
               borderWidth: 1,
               borderColor: "#d1d5db",
@@ -74,8 +65,10 @@ export default function Client3() {
 
           <TextInput
             placeholder="Last Name"
-            value={lastName}
-            onChangeText={setLastName}
+            value={formData.lastName || ""}
+            onChangeText={(text) =>
+              setFormData({ ...formData, lastName: text })
+            }
             style={{
               borderWidth: 1,
               borderColor: "#d1d5db",
@@ -88,8 +81,8 @@ export default function Client3() {
 
           <TextInput
             placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
+            value={formData.email || ""}
+            onChangeText={(text) => setFormData({ ...formData, email: text })}
             keyboardType="email-address"
             style={{
               borderWidth: 1,
@@ -101,21 +94,44 @@ export default function Client3() {
             }}
           />
 
-          <TouchableOpacity
-            onPress={handleNext}
-            style={{
-              backgroundColor: "#3b82f6",
-              padding: 15,
-              borderRadius: 8,
-              alignItems: "center",
-            }}
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
-            <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>
-              Continue
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={back}
+              style={{
+                backgroundColor: "#6b7280",
+                padding: 15,
+                borderRadius: 8,
+                alignItems: "center",
+                flex: 1,
+                marginRight: 10,
+              }}
+            >
+              <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>
+                Back
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={handleNext}
+              style={{
+                backgroundColor: "#3b82f6",
+                padding: 15,
+                borderRadius: 8,
+                alignItems: "center",
+                flex: 1,
+              }}
+            >
+              <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>
+                Continue
+              </Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
-}
+};
+
+export default ClientStep2;

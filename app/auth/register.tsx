@@ -3,45 +3,50 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
+
+// Import step components
+import ClientStep1 from "./ama_clients/client1";
+import ClientStep2 from "./ama_clients/client2";
+import ClientStep3 from "./ama_clients/client3";
+import ClientStep4 from "./ama_clients/client4";
+
+import HelperStep1 from "./ama_helpers/helper1";
+import HelperStep2 from "./ama_helpers/helper2";
+import HelperStep3 from "./ama_helpers/helper3";
+
+import CompanyStep1 from "./ama_companies/company1";
+import CompanyStep2 from "./ama_companies/company2";
+import CompanyStep3 from "./ama_companies/company3";
+
+type UserType = "CLIENT" | "CLEANER" | "COMPANY_ADMIN";
 
 export default function Register() {
   const router = useRouter();
-  const [step, setStep] = useState(1);
+  const [userType, setUserType] = useState<UserType | null>(null);
+  const [step, setStep] = useState<number>(1);
   const [loading, setLoading] = useState(false);
 
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    phone: "",
-    nrc: "",
-    address: "",
-    city: "",
-    province: "",
-    postalCode: "",
-    alternativePhone: "",
-    notes: "",
-  });
+  // Shared form data per type
+  const [clientData, setClientData] = useState<any>({});
+  const [helperData, setHelperData] = useState<any>({});
+  const [companyData, setCompanyData] = useState<any>({});
 
-  const next = () => setStep((prev) => Math.min(prev + 1, 3));
+  const next = () => setStep((prev) => prev + 1);
   const back = () => setStep((prev) => Math.max(prev - 1, 1));
 
-  // ========== API Call ==========
+  // API call
   const registerUser = async (data: any) => {
     try {
-      const response = await fetch("http://localhost:8080/register", {
+      const response = await fetch("http://192.168.100.157:8080/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -53,193 +58,171 @@ export default function Register() {
       }
 
       const result = await response.json();
-      return result; // should contain JWT token
+      return result; // JWT token
     } catch (err: any) {
       throw new Error(err.message || "Network error");
     }
   };
 
   const handleSubmit = async () => {
-    if (!formData.address || !formData.city || !formData.province) {
-      Alert.alert("Error", "Please fill in all required fields");
-      return;
-    }
-
     setLoading(true);
     try {
-      const payload = { ...formData, userType: "CLIENT", role: "CLIENT" };
-      const result = await registerUser(payload);
+      let payload: any = {};
+      if (userType === "CLIENT")
+        payload = { ...clientData, userType, role: "CLIENT" };
+      if (userType === "CLEANER")
+        payload = { ...helperData, userType, role: "CLEANER" };
+      if (userType === "COMPANY_ADMIN")
+        payload = { ...companyData, userType, role: "COMPANY_ADMIN" };
 
-      // Store JWT
+      const result = await registerUser(payload);
       await AsyncStorage.setItem("jwtToken", result.token);
 
       Alert.alert("Success", "Registration completed");
       router.replace("/(tabs)/home");
     } catch (err: any) {
       Alert.alert("Error", err.message);
-      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  // ================= STEP COMPONENTS =================
-  const Step1 = () => (
-    <View>
-      <Text style={styles.title}>Personal Information</Text>
-      <TextInput
-        placeholder="First Name"
-        value={formData.firstName}
-        onChangeText={(text) => setFormData({ ...formData, firstName: text })}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Last Name"
-        value={formData.lastName}
-        onChangeText={(text) => setFormData({ ...formData, lastName: text })}
-        style={styles.input}
-      />
-      <TouchableOpacity style={styles.button} onPress={next}>
-        <Text style={styles.buttonText}>Next</Text>
-      </TouchableOpacity>
-    </View>
-  );
-
-  const Step2 = () => (
-    <View>
-      <Text style={styles.title}>Contact Information</Text>
-      <TextInput
-        placeholder="Email"
-        value={formData.email}
-        onChangeText={(text) => setFormData({ ...formData, email: text })}
-        keyboardType="email-address"
-        autoCapitalize="none"
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Phone"
-        value={formData.phone}
-        onChangeText={(text) => setFormData({ ...formData, phone: text })}
-        keyboardType="phone-pad"
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Password"
-        value={formData.password}
-        onChangeText={(text) => setFormData({ ...formData, password: text })}
-        secureTextEntry
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Confirm Password"
-        value={formData.confirmPassword}
-        onChangeText={(text) =>
-          setFormData({ ...formData, confirmPassword: text })
-        }
-        secureTextEntry
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="NRC"
-        value={formData.nrc}
-        onChangeText={(text) => setFormData({ ...formData, nrc: text })}
-        style={styles.input}
-      />
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <TouchableOpacity
-          style={[styles.button, styles.backButton]}
-          onPress={back}
-        >
-          <Text style={styles.buttonText}>Back</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => {
-            if (!formData.email || !formData.password) {
-              Alert.alert("Error", "Please fill in all required fields");
-              return;
-            }
-            if (formData.password !== formData.confirmPassword) {
-              Alert.alert("Error", "Passwords do not match");
-              return;
-            }
-            next();
-          }}
-        >
-          <Text style={styles.buttonText}>Next</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-
-  const Step3 = () => (
-    <View>
-      <Text style={styles.title}>Address & Details</Text>
-      <TextInput
-        placeholder="Address"
-        value={formData.address}
-        onChangeText={(text) => setFormData({ ...formData, address: text })}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="City"
-        value={formData.city}
-        onChangeText={(text) => setFormData({ ...formData, city: text })}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Province"
-        value={formData.province}
-        onChangeText={(text) => setFormData({ ...formData, province: text })}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Postal Code"
-        value={formData.postalCode}
-        onChangeText={(text) => setFormData({ ...formData, postalCode: text })}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Alternative Phone"
-        value={formData.alternativePhone}
-        onChangeText={(text) =>
-          setFormData({ ...formData, alternativePhone: text })
-        }
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Notes (optional)"
-        value={formData.notes}
-        onChangeText={(text) => setFormData({ ...formData, notes: text })}
-        style={styles.input}
-        multiline
-      />
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <TouchableOpacity
-          style={[styles.button, styles.backButton]}
-          onPress={back}
-        >
-          <Text style={styles.buttonText}>Back</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={handleSubmit}
-          disabled={loading}
-        >
-          <Text style={styles.buttonText}>
-            {loading ? "Submitting..." : "Submit"}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-
-  // ============ Render steps ============
-
+  // Step rendering
   const renderStep = () => {
-    if (step === 1) return <Step1 />;
-    if (step === 2) return <Step2 />;
-    if (step === 3) return <Step3 />;
+    if (!userType) {
+      // User type selection screen
+      return (
+        <View style={{ alignItems: "center" }}>
+          <Text style={styles.title}>Select Account Type</Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setUserType("CLIENT")}
+          >
+            <Text style={styles.buttonText}>Hire Helper</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setUserType("CLEANER")}
+          >
+            <Text style={styles.buttonText}>Work as Helper</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setUserType("COMPANY_ADMIN")}
+          >
+            <Text style={styles.buttonText}>Company</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
+    // Render steps per user type
+    if (userType === "CLIENT") {
+      switch (step) {
+        case 1:
+          return (
+            <ClientStep1
+              next={next}
+              formData={clientData}
+              setFormData={setClientData}
+            />
+          );
+        case 2:
+          return (
+            <ClientStep2
+              next={next}
+              back={back}
+              formData={clientData}
+              setFormData={setClientData}
+            />
+          );
+        case 3:
+          return (
+            <ClientStep3
+              next={next}
+              back={back}
+              formData={clientData}
+              setFormData={setClientData}
+            />
+          );
+        case 4:
+          return (
+            <ClientStep4
+              back={back}
+              formData={clientData}
+              setFormData={setClientData}
+              onSubmit={handleSubmit}
+              loading={loading}
+            />
+          );
+      }
+    }
+
+    if (userType === "CLEANER") {
+      switch (step) {
+        case 1:
+          return (
+            <HelperStep1
+              next={next}
+              formData={helperData}
+              setFormData={setHelperData}
+            />
+          );
+        case 2:
+          return (
+            <HelperStep2
+              next={next}
+              back={back}
+              formData={helperData}
+              setFormData={setHelperData}
+            />
+          );
+        case 3:
+          return (
+            <HelperStep3
+              next={next}
+              back={back}
+              formData={helperData}
+              setFormData={helperData}
+              onSubmit={handleSubmit}
+              loading={loading}
+            />
+          );
+      }
+    }
+
+    if (userType === "COMPANY_ADMIN") {
+      switch (step) {
+        case 1:
+          return (
+            <CompanyStep1
+              next={next}
+              formData={companyData}
+              setFormData={setCompanyData}
+            />
+          );
+        case 2:
+          return (
+            <CompanyStep2
+              next={next}
+              back={back}
+              formData={companyData}
+              setFormData={setCompanyData}
+            />
+          );
+        case 3:
+          return (
+            <CompanyStep3
+              back={back}
+              formData={companyData}
+              setFormData={companyData}
+              onSubmit={handleSubmit}
+              loading={loading}
+            />
+          );
+      }
+    }
+
     return null;
   };
 
@@ -253,7 +236,6 @@ export default function Register() {
         keyboardShouldPersistTaps="handled"
       >
         {renderStep()}
-
         <TouchableOpacity onPress={() => router.replace("/auth/login")}>
           <Text style={styles.linkText}>Already have an account? Login</Text>
         </TouchableOpacity>
@@ -276,23 +258,13 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#0f172a",
   },
-  input: {
-    backgroundColor: "#fff",
-    padding: 12,
-    borderRadius: 10,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-  },
   button: {
     backgroundColor: "#3b82f6",
     padding: 14,
     borderRadius: 10,
     alignItems: "center",
-    flex: 1,
-    margin: 5,
+    marginVertical: 5,
   },
-  backButton: { backgroundColor: "#64748b" },
   buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
   linkText: {
     textAlign: "center",
