@@ -26,8 +26,8 @@ export default function Login() {
     try {
       setLoading(true);
 
-      // 🔥 Replace with your Go backend endpoint
-      const response = await fetch("http://localhost:8080/login", {
+      // backend endpoint
+      const response = await fetch("http://192.168.1.177:8080/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

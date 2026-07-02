@@ -68,6 +68,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f8fafc",
     padding: 15,
+    marginTop: 40,
   },
   title: {
     fontSize: 22,

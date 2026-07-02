@@ -43,6 +43,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: "#f8fafc",
+    marginTop: 40,
   },
   card: {
     backgroundColor: "#0f172a",

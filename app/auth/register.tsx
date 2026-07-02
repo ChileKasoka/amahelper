@@ -46,7 +46,7 @@ export default function Register() {
   // API call
   const registerUser = async (data: any) => {
     try {
-      const response = await fetch("http://192.168.100.157:8080/register", {
+      const response = await fetch("http://192.168.1.177:8080/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
