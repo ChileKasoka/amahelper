@@ -27,6 +27,7 @@ import CompanyStep1 from "./ama_companies/company1";
 import CompanyStep2 from "./ama_companies/company2";
 import CompanyStep3 from "./ama_companies/company3";
 
+
 type UserType = "CLIENT" | "CLEANER" | "COMPANY_ADMIN";
 
 export default function Register() {
@@ -46,21 +47,33 @@ export default function Register() {
   // API call
   const registerUser = async (data: any) => {
     try {
-      const response = await fetch("http://192.168.1.177:8080/register", {
+      const payload = JSON.stringify(data);
+
+      console.log("REGISTER_REQUEST_JSON", payload);
+
+      const response = await fetch("http://192.168.1.177:8080/auth/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: payload,
       });
 
+      const text = await response.text();
+      console.log("REGISTER_RAW_RESPONSE", text);
+
       if (!response.ok) {
-        const err = await response.text();
-        throw new Error(err || "Registration failed");
+        throw new Error(text || "Registration failed");
       }
 
-      const result = await response.json();
-      return result; // JWT token
+      const result = JSON.parse(text); // now backend returns real JSON
+      console.log("REGISTER_JSON", result);
+
+      return result;
     } catch (err: any) {
-      throw new Error(err.message || "Network error");
+      console.log("REGISTER_ERROR", err);
+      throw new Error(err?.message || "Network error");
     }
   };
 
@@ -183,7 +196,7 @@ export default function Register() {
               next={next}
               back={back}
               formData={helperData}
-              setFormData={helperData}
+              setFormData={setHelperData}
               onSubmit={handleSubmit}
               loading={loading}
             />
@@ -215,7 +228,7 @@ export default function Register() {
             <CompanyStep3
               back={back}
               formData={companyData}
-              setFormData={companyData}
+              setFormData={setCompanyData}
               onSubmit={handleSubmit}
               loading={loading}
             />

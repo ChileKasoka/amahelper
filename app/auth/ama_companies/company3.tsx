@@ -1,75 +1,113 @@
 // app/auth/ama_companies/company3.tsx
-import { useState } from "react";
+import React from "react";
 import {
+  Alert,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-  StyleSheet,
 } from "react-native";
 
 interface Props {
   back: () => void;
   formData: any;
   setFormData: React.Dispatch<React.SetStateAction<any>>;
-  onSubmit: () => Promise<void>; // callback for final submission
+  onSubmit: () => Promise<void>;
   loading: boolean;
 }
 
-export default function CompanyStep3({ back, formData, setFormData, onSubmit, loading }: Props) {
-  const [latitude, setLatitude] = useState<string>(formData.latitude?.toString() || "");
-  const [longitude, setLongitude] = useState<string>(formData.longitude?.toString() || "");
+export default function CompanyStep3({
+  back,
+  formData,
+  setFormData,
+  onSubmit,
+  loading,
+}: Props) {
+  const handleFinalSubmit = async () => {
+    if (!formData.latitude || !formData.longitude) {
+      // optional validation only
+    }
 
-  const handleFinalSubmit = () => {
-    setFormData({
-      ...formData,
-      latitude: latitude ? Number(latitude) : undefined,
-      longitude: longitude ? Number(longitude) : undefined,
+    if (
+      !formData.companyName ||
+      !formData.adminEmail ||
+      !formData.adminPassword
+    ) {
+      Alert.alert("Error", "Missing required company/admin fields");
+      return;
+    }
+
+    setFormData((prev: any) => ({
+      ...prev,
+
+      // backend required final flags
       userType: "COMPANY_ADMIN",
       role: "ADMIN",
-    });
 
-    onSubmit();
+      // ensure numbers are correct
+      latitude: prev.latitude ? Number(prev.latitude) : undefined,
+      longitude: prev.longitude ? Number(prev.longitude) : undefined,
+    }));
+
+    await onSubmit();
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Review Information</Text>
+      <Text style={styles.title}>Review & Submit</Text>
 
+      {/* COMPANY SUMMARY */}
       <View style={styles.reviewBox}>
-        <Text>Company: {formData.companyName}</Text>
+        <Text style={styles.label}>Company Details</Text>
+        <Text>Name: {formData.companyName}</Text>
+        <Text>Type: {formData.companyType}</Text>
         <Text>Email: {formData.companyEmail}</Text>
         <Text>Phone: {formData.companyPhone}</Text>
         <Text>Address: {formData.companyAddress}</Text>
-        <Text>
-          Admin: {formData.adminFirstName} {formData.adminLastName}
-        </Text>
-        <Text>Admin Email: {formData.adminEmail}</Text>
+        <Text>Registration: {formData.registrationNumber}</Text>
       </View>
 
+      {/* ADMIN SUMMARY */}
+      <View style={styles.reviewBox}>
+        <Text style={styles.label}>Admin Details</Text>
+        <Text>
+          Name: {formData.adminFirstName} {formData.adminLastName}
+        </Text>
+        <Text>Email: {formData.adminEmail}</Text>
+        <Text>Phone: {formData.adminPhone || "N/A"}</Text>
+        <Text>NRC: {formData.adminNrc || "N/A"}</Text>
+      </View>
+
+      {/* OPTIONAL COORDINATES */}
       <TextInput
         placeholder="Latitude (optional)"
         keyboardType="numeric"
-        value={latitude}
-        onChangeText={setLatitude}
+        value={formData.latitude?.toString() || ""}
+        onChangeText={(text) =>
+          setFormData((prev: any) => ({
+            ...prev,
+            latitude: text,
+          }))
+        }
         style={styles.input}
       />
+
       <TextInput
         placeholder="Longitude (optional)"
         keyboardType="numeric"
-        value={longitude}
-        onChangeText={setLongitude}
+        value={formData.longitude?.toString() || ""}
+        onChangeText={(text) =>
+          setFormData((prev: any) => ({
+            ...prev,
+            longitude: text,
+          }))
+        }
         style={styles.input}
       />
 
-      <TouchableOpacity
-        style={[styles.button, styles.backButton]}
-        onPress={back}
-      >
-        <Text style={styles.buttonText}>Back</Text>
-      </TouchableOpacity>
-
+      {/* BUTTONS */}
       <TouchableOpacity
         style={styles.button}
         onPress={handleFinalSubmit}
@@ -78,6 +116,10 @@ export default function CompanyStep3({ back, formData, setFormData, onSubmit, lo
         <Text style={styles.buttonText}>
           {loading ? "Submitting..." : "Register Company"}
         </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.backButton} onPress={back}>
+        <Text style={styles.buttonText}>Back</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -102,13 +144,17 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 15,
     backgroundColor: "#fff",
-    color: "#111827",
   },
   reviewBox: {
     padding: 15,
     backgroundColor: "#e5e7eb",
     borderRadius: 8,
     marginBottom: 15,
+  },
+  label: {
+    fontWeight: "700",
+    marginBottom: 8,
+    color: "#111827",
   },
   button: {
     backgroundColor: "#3b82f6",
@@ -119,7 +165,10 @@ const styles = StyleSheet.create({
   },
   backButton: {
     backgroundColor: "#6b7280",
-    marginBottom: 10,
+    padding: 15,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 10,
   },
   buttonText: {
     color: "#fff",

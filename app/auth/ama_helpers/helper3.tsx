@@ -1,22 +1,14 @@
-// app/auth/ama_helpers/helper3.tsx
-import { useState } from "react";
+import React, { useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
 } from "react-native";
-
-type HelperStep3Props = {
-  next: () => void;
-  back: () => void;
-  formData: any;
-  setFormData: React.Dispatch<React.SetStateAction<any>>;
-  onSubmit?: () => void;
-  loading?: boolean;
-};
+import { registerUser } from "../../../api/auth";
+import { StepProps } from "../../../types/registration";
 
 const servicesList = [
   "House Cleaning",
@@ -25,183 +17,274 @@ const servicesList = [
   "Deep Cleaning",
 ];
 
-export default function HelperStep3({
-  next,
-  back,
-  formData,
-  setFormData,
-}: HelperStep3Props) {
-  const [services, setServices] = useState<string[]>(formData.services || []);
-  const [address, setAddress] = useState(formData.address || "");
-  const [gender, setGender] = useState(formData.gender || "");
-  const [employmentType, setEmploymentType] = useState(
-    formData.employmentType || "FULL_TIME",
-  );
-  const [baseSalary, setBaseSalary] = useState(
-    formData.baseSalary?.toString() || "",
-  );
-  const [commissionRate, setCommissionRate] = useState(
-    formData.commissionRate?.toString() || "",
-  );
+const HelperStep3: React.FC<StepProps> = ({ back, formData, setFormData }) => {
+  const [loading, setLoading] = useState(false);
 
   const toggleService = (service: string) => {
-    setServices((prev) =>
-      prev.includes(service)
-        ? prev.filter((s) => s !== service)
-        : [...prev, service],
-    );
+    const current = formData.services || [];
+
+    const updated = current.includes(service)
+      ? current.filter((s: string) => s !== service)
+      : [...current, service];
+
+    setFormData((prev: any) => ({
+      ...prev,
+      services: updated,
+    }));
   };
 
-  const handleNext = () => {
-    if (!address || !gender) {
-      Alert.alert("Error", "Please fill required fields");
+  // ✅ FINAL SUBMIT (LIKE CLIENT STEP 4)
+  const handleSubmit = async () => {
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      nrc,
+      phone,
+      gender,
+      employmentType,
+      services,
+      address,
+      baseSalary,
+      commissionRate,
+    } = formData;
+
+    // validation
+    if (
+      !firstName ||
+      !lastName ||
+      !email ||
+      !password ||
+      !nrc ||
+      !gender ||
+      !employmentType ||
+      !address ||
+      !services?.length
+    ) {
+      Alert.alert("Error", "Please fill all required fields");
       return;
     }
 
-    setFormData({
-      ...formData,
-      address,
+    const payload = {
+      firstName,
+      lastName,
+      email,
+      password,
+      phone,
+      nrc,
       gender,
       employmentType,
-      baseSalary: Number(baseSalary),
-      commissionRate: Number(commissionRate),
       services,
-    });
+      address,
+      baseSalary,
+      commissionRate,
 
-    next();
+      userType: "CLEANER",
+      role: "CLEANER",
+    };
+
+    try {
+      setLoading(true);
+
+      console.log("HELPER REGISTER PAYLOAD:", payload);
+
+      const res = await registerUser(payload as any);
+
+      Alert.alert("Success", "Cleaner registered successfully!");
+
+      // reset form
+      setFormData({});
+    } catch (err: any) {
+      console.error("HELPER REGISTER ERROR:", err);
+
+      Alert.alert(
+        "Registration Failed",
+        err?.message || "Something went wrong",
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Cleaner Details</Text>
+    <ScrollView
+      contentContainerStyle={{
+        padding: 20,
+        flexGrow: 1,
+        backgroundColor: "#f9fafb",
+      }}
+    >
+      <Text
+        style={{
+          fontSize: 24,
+          fontWeight: "700",
+          marginBottom: 20,
+          color: "#111827",
+        }}
+      >
+        Cleaner Details
+      </Text>
 
+      {/* ADDRESS */}
       <TextInput
         placeholder="Address"
-        value={address}
-        onChangeText={setAddress}
-        style={styles.input}
+        value={formData.address || ""}
+        onChangeText={(text) =>
+          setFormData((prev: any) => ({ ...prev, address: text }))
+        }
+        style={{
+          borderWidth: 1,
+          borderColor: "#d1d5db",
+          padding: 14,
+          borderRadius: 8,
+          marginBottom: 15,
+          backgroundColor: "#fff",
+        }}
       />
 
+      {/* GENDER */}
       <TextInput
-        placeholder="Gender (MALE/FEMALE)"
-        value={gender}
-        onChangeText={setGender}
-        style={styles.input}
+        placeholder="Gender (MALE / FEMALE)"
+        value={formData.gender || ""}
+        onChangeText={(text) =>
+          setFormData((prev: any) => ({ ...prev, gender: text }))
+        }
+        style={{
+          borderWidth: 1,
+          borderColor: "#d1d5db",
+          padding: 14,
+          borderRadius: 8,
+          marginBottom: 15,
+          backgroundColor: "#fff",
+        }}
       />
 
+      {/* EMPLOYMENT TYPE */}
       <TextInput
-        placeholder="Employment Type (FULL_TIME/PART_TIME)"
-        value={employmentType}
-        onChangeText={setEmploymentType}
-        style={styles.input}
+        placeholder="Employment Type (FULL_TIME / PART_TIME)"
+        value={formData.employmentType || ""}
+        onChangeText={(text) =>
+          setFormData((prev: any) => ({
+            ...prev,
+            employmentType: text,
+          }))
+        }
+        style={{
+          borderWidth: 1,
+          borderColor: "#d1d5db",
+          padding: 14,
+          borderRadius: 8,
+          marginBottom: 15,
+          backgroundColor: "#fff",
+        }}
       />
 
+      {/* BASE SALARY */}
       <TextInput
-        placeholder="Base Salary"
-        value={baseSalary}
-        onChangeText={setBaseSalary}
+        placeholder="Base Salary (optional)"
         keyboardType="numeric"
-        style={styles.input}
+        value={formData.baseSalary?.toString() || ""}
+        onChangeText={(text) =>
+          setFormData((prev: any) => ({
+            ...prev,
+            baseSalary: text ? Number(text) : undefined,
+          }))
+        }
+        style={{
+          borderWidth: 1,
+          borderColor: "#d1d5db",
+          padding: 14,
+          borderRadius: 8,
+          marginBottom: 15,
+          backgroundColor: "#fff",
+        }}
       />
 
+      {/* COMMISSION */}
       <TextInput
-        placeholder="Commission Rate (%)"
-        value={commissionRate}
-        onChangeText={setCommissionRate}
+        placeholder="Commission Rate (optional)"
         keyboardType="numeric"
-        style={styles.input}
+        value={formData.commissionRate?.toString() || ""}
+        onChangeText={(text) =>
+          setFormData((prev: any) => ({
+            ...prev,
+            commissionRate: text ? Number(text) : undefined,
+          }))
+        }
+        style={{
+          borderWidth: 1,
+          borderColor: "#d1d5db",
+          padding: 14,
+          borderRadius: 8,
+          marginBottom: 15,
+          backgroundColor: "#fff",
+        }}
       />
 
-      <Text style={styles.label}>Services</Text>
+      {/* SERVICES */}
+      <Text style={{ fontWeight: "700", marginBottom: 10 }}>Services</Text>
+
       {servicesList.map((service) => (
         <TouchableOpacity
           key={service}
           onPress={() => toggleService(service)}
-          style={[
-            styles.serviceBox,
-            services.includes(service) && styles.serviceBoxSelected,
-          ]}
+          style={{
+            padding: 14,
+            borderWidth: 1,
+            borderColor: "#d1d5db",
+            borderRadius: 8,
+            marginBottom: 10,
+            backgroundColor: formData.services?.includes(service)
+              ? "#3b82f6"
+              : "#fff",
+          }}
         >
           <Text
-            style={[
-              styles.serviceText,
-              services.includes(service) && styles.serviceTextSelected,
-            ]}
+            style={{
+              color: formData.services?.includes(service) ? "#fff" : "#111827",
+              fontWeight: "600",
+            }}
           >
             {service}
           </Text>
         </TouchableOpacity>
       ))}
 
-      <TouchableOpacity style={styles.button} onPress={handleNext}>
-        <Text style={styles.buttonText}>Continue</Text>
+      {/* SUBMIT BUTTON */}
+      <TouchableOpacity
+        onPress={handleSubmit}
+        disabled={loading}
+        style={{
+          backgroundColor: loading ? "#93c5fd" : "#3b82f6",
+          padding: 15,
+          borderRadius: 8,
+          alignItems: "center",
+          marginTop: 20,
+        }}
+      >
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={{ color: "#fff", fontWeight: "700" }}>Submit</Text>
+        )}
       </TouchableOpacity>
 
+      {/* BACK */}
       <TouchableOpacity
-        style={[styles.button, { backgroundColor: "#6b7280", marginTop: 10 }]}
-        onPress={back}
+        onPress={() => back?.()}
+        style={{
+          backgroundColor: "#6b7280",
+          padding: 15,
+          borderRadius: 8,
+          alignItems: "center",
+          marginTop: 10,
+        }}
       >
-        <Text style={styles.buttonText}>Back</Text>
+        <Text style={{ color: "#fff", fontWeight: "700" }}>Back</Text>
       </TouchableOpacity>
     </ScrollView>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    backgroundColor: "#f9fafb",
-    flexGrow: 1,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "700",
-    marginBottom: 20,
-    color: "#111827",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#d1d5db",
-    borderRadius: 8,
-    padding: 14,
-    marginBottom: 15,
-    backgroundColor: "#fff",
-    color: "#111827",
-  },
-  button: {
-    backgroundColor: "#3b82f6",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 10,
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: 16,
-  },
-  label: {
-    fontWeight: "600",
-    marginBottom: 10,
-    color: "#374151",
-  },
-  serviceBox: {
-    padding: 14,
-    borderWidth: 1,
-    borderColor: "#d1d5db",
-    borderRadius: 8,
-    marginBottom: 10,
-    backgroundColor: "#fff",
-  },
-  serviceBoxSelected: {
-    backgroundColor: "#3b82f6",
-    borderColor: "#3b82f6",
-  },
-  serviceText: {
-    color: "#111827",
-  },
-  serviceTextSelected: {
-    color: "#fff",
-    fontWeight: "700",
-  },
-});
+export default HelperStep3;

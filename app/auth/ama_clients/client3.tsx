@@ -1,16 +1,17 @@
 // app/auth/ama_clients/client3.tsx
+import { StepProps } from "@/types/registration";
 import React from "react";
 import {
   Alert,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
   TouchableWithoutFeedback,
-  Keyboard,
   View,
 } from "react-native";
 
@@ -22,21 +23,19 @@ interface FormData {
   password?: string;
 }
 
-interface Step3Props {
-  formData: FormData;
-  setFormData: (data: FormData) => void;
-  next: () => void;
-  back?: () => void;
-}
-
-const ClientStep3: React.FC<Step3Props> = ({ formData, setFormData, next, back }) => {
+const ClientStep3: React.FC<StepProps> = ({
+  formData,
+  setFormData,
+  next,
+  back,
+}) => {
   const handleNext = () => {
     const { firstName, lastName, email, nrc, password } = formData;
     if (!firstName || !lastName || !email || !nrc || !password) {
       Alert.alert("Error", "Please fill in all fields");
       return;
     }
-    next();
+    next?.();
   };
 
   return (
@@ -46,19 +45,26 @@ const ClientStep3: React.FC<Step3Props> = ({ formData, setFormData, next, back }
       keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
+        >
           <Text style={styles.title}>Personal & Security Details</Text>
 
           <TextInput
             placeholder="First Name"
             value={formData.firstName || ""}
-            onChangeText={(text) => setFormData({ ...formData, firstName: text })}
+            onChangeText={(text) =>
+              setFormData({ ...formData, firstName: text })
+            }
             style={styles.input}
           />
           <TextInput
             placeholder="Last Name"
             value={formData.lastName || ""}
-            onChangeText={(text) => setFormData({ ...formData, lastName: text })}
+            onChangeText={(text) =>
+              setFormData({ ...formData, lastName: text })
+            }
             style={styles.input}
           />
           <TextInput
@@ -78,19 +84,32 @@ const ClientStep3: React.FC<Step3Props> = ({ formData, setFormData, next, back }
           <TextInput
             placeholder="Password"
             value={formData.password || ""}
-            onChangeText={(text) => setFormData({ ...formData, password: text })}
+            onChangeText={(text) =>
+              setFormData({ ...formData, password: text })
+            }
             secureTextEntry
             style={styles.input}
           />
 
-          <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
             {back && (
-              <TouchableOpacity onPress={back} style={[styles.button, { backgroundColor: "#6b7280", flex: 1, marginRight: 10 }]}>
+              <TouchableOpacity
+                onPress={back}
+                style={[
+                  styles.button,
+                  { backgroundColor: "#6b7280", flex: 1, marginRight: 10 },
+                ]}
+              >
                 <Text style={styles.buttonText}>Back</Text>
               </TouchableOpacity>
             )}
 
-            <TouchableOpacity onPress={handleNext} style={[styles.button, { flex: 1 }]}>
+            <TouchableOpacity
+              onPress={handleNext}
+              style={[styles.button, { flex: 1 }]}
+            >
               <Text style={styles.buttonText}>Next</Text>
             </TouchableOpacity>
           </View>
@@ -104,9 +123,33 @@ export default ClientStep3;
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f5f5f5" },
-  scrollContainer: { padding: 20, flexGrow: 1, justifyContent: "center", backgroundColor: "#f5f5f5" },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 20, color: "#111827" },
-  input: { borderWidth: 1, borderColor: "#d1d5db", borderRadius: 8, padding: 12, marginBottom: 15, backgroundColor: "#fff", color: "#111827" },
-  button: { backgroundColor: "#3b82f6", padding: 15, borderRadius: 8, alignItems: "center", marginTop: 10 },
+  scrollContainer: {
+    padding: 20,
+    flexGrow: 1,
+    justifyContent: "center",
+    backgroundColor: "#f5f5f5",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+    color: "#111827",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#d1d5db",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 15,
+    backgroundColor: "#fff",
+    color: "#111827",
+  },
+  button: {
+    backgroundColor: "#3b82f6",
+    padding: 15,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 10,
+  },
   buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
 });
