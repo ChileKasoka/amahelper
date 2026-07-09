@@ -5,6 +5,7 @@ export type UserType =
   | "CLIENT"
   | "CLEANER"
   | "COMPANY_ADMIN"
+  | "SUPPLIER"
   | "USER"
   | "PLATFORM_ADMIN";
 
@@ -90,8 +91,48 @@ export interface CompanyPayload {
   role: "ADMIN";
 }
 
+/* ================= SUPPLIER PAYLOAD ================= */
+
+export interface SupplierPayload {
+  adminFirstName: string;
+  adminLastName: string;
+  adminEmail: string;
+  adminPassword: string;
+  adminPhone?: string;
+
+  adminNrc?: string;
+
+  businessName: string;
+  phone: string;
+  alternativePhone?: string;
+  email: string;
+  password: string;
+
+  tpin?: string;
+  supplierRegistrationNumber: string;
+
+  address: string;
+  city: string;
+  province: string;
+  postalCode?: string;
+
+  latitude?: number;
+  longitude?: number;
+
+  category: string;
+  productsSupplied: string;
+  notes?: string;
+
+  userType: "SUPPLIER";
+  role: "ADMIN";
+}
+
 /* ================= UNION ================= */
-export type RegisterPayload = ClientPayload | CleanerPayload | CompanyPayload;
+export type RegisterPayload =
+  | ClientPayload
+  | CleanerPayload
+  | CompanyPayload
+  | SupplierPayload;
 
 /* ================= API ================= */
 
