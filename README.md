@@ -10,15 +10,9 @@ Whether you're looking for a trusted helper, offering professional services, hir
 
 # AmaHelper
 
-![Logo](assets/amahq.png)
+![Logo](assets/images/amahq.png)
 
 ## Home Screen
-
-![Home Screen](assets/images/1.jpeg)
-
-![Home Screen](assets/images/2.jpeg)
-
-![Home Screen](assets/images/3.jpeg)
 
 ## 📱 Features
 
@@ -86,25 +80,25 @@ Whether you're looking for a trusted helper, offering professional services, hir
 ### Home Screen
 
 <p align="center">
-  <img src="assets/images/1.jpeg" width="250" alt="Home Screen">
+  <img src="assets/images/1.jpeg" width="150" alt="Home Screen">
 </p>
 
 ### Find Services
 
 <p align="center">
-  <img src="assets/images/2.jpeg" width="250" alt="Services">
+  <img src="assets/images/2.jpeg" width="150" alt="Services">
 </p>
 
 ### Helper Profile
 
 <p align="center">
-  <img src="assets/images/3.jpeg" width="250" alt="Helper Profile">
+  <img src="assets/images/3.jpeg" width="150" alt="Helper Profile">
 </p>
 
 ### Booking & Requests
 
 <p align="center">
-  <img src="assets/images/amahq.png" width="250" alt="Bookings">
+  <img src="assets/images/amahq.png" width="150" alt="Bookings">
 </p>
 
 > Replace the images above with screenshots from your application.
