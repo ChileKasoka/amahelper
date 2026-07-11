@@ -86,25 +86,25 @@ Whether you're looking for a trusted helper, offering professional services, hir
 ### Home Screen
 
 <p align="center">
-  <img src="assets/home.png" width="250" alt="Home Screen">
+  <img src="assets/1.jpeg" width="250" alt="Home Screen">
 </p>
 
 ### Find Services
 
 <p align="center">
-  <img src="assets/services.png" width="250" alt="Services">
+  <img src="assets/2.jpeg" width="250" alt="Services">
 </p>
 
 ### Helper Profile
 
 <p align="center">
-  <img src="assets/profile.png" width="250" alt="Helper Profile">
+  <img src="assets/3.jpeg" width="250" alt="Helper Profile">
 </p>
 
 ### Booking & Requests
 
 <p align="center">
-  <img src="assets/bookings.png" width="250" alt="Bookings">
+  <img src="assets/amahq.png" width="250" alt="Bookings">
 </p>
 
 > Replace the images above with screenshots from your application.
