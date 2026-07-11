@@ -1,4 +1,13 @@
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React from "react";
+import {
+    Alert,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
 
 import { useAuth } from "@/context/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
@@ -21,88 +30,97 @@ export default function Profile() {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.container}
+      >
+        {/* Header */}
 
-      <Text style={styles.title}>Profile</Text>
+        <Text style={styles.title}>Profile</Text>
 
-      {/* Profile Card */}
+        {/* Profile Card */}
 
-      <View style={styles.profileCard}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>
-            {user?.firstName?.charAt(0)}
-            {user?.lastName?.charAt(0)}
+        <View style={styles.profileCard}>
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>
+              {user?.firstName?.charAt(0)}
+              {user?.lastName?.charAt(0)}
+            </Text>
+          </View>
+
+          <Text style={styles.name}>
+            {user?.firstName} {user?.lastName}
           </Text>
+
+          <Text style={styles.role}>{user?.userType || "Client Account"}</Text>
         </View>
 
-        <Text style={styles.name}>
-          {user?.firstName} {user?.lastName}
-        </Text>
+        {/* Personal Information */}
 
-        <Text style={styles.role}>Client Account</Text>
-      </View>
+        <View style={styles.infoCard}>
+          <Text style={styles.sectionTitle}>Personal Information</Text>
 
-      {/* Information */}
+          <View style={styles.row}>
+            <Ionicons name="mail-outline" size={22} color="#2563eb" />
 
-      <View style={styles.infoCard}>
-        <Text style={styles.sectionTitle}>Personal Information</Text>
+            <View>
+              <Text style={styles.label}>Email</Text>
 
-        <View style={styles.row}>
-          <Ionicons name="mail-outline" size={22} color="#2563eb" />
+              <Text style={styles.value}>{user?.email || "Not provided"}</Text>
+            </View>
+          </View>
 
-          <View>
-            <Text style={styles.label}>Email</Text>
+          <View style={styles.row}>
+            <Ionicons name="call-outline" size={22} color="#2563eb" />
 
-            <Text style={styles.value}>{user?.email || "Not provided"}</Text>
+            <View>
+              <Text style={styles.label}>Phone</Text>
+
+              <Text style={styles.value}>{user?.phone || "Not provided"}</Text>
+            </View>
           </View>
         </View>
 
-        <View style={styles.row}>
-          <Ionicons name="call-outline" size={22} color="#2563eb" />
+        {/* Account Settings */}
 
-          <View>
-            <Text style={styles.label}>Phone</Text>
+        <View style={styles.infoCard}>
+          <Text style={styles.sectionTitle}>Account</Text>
 
-            <Text style={styles.value}>{user?.phone || "Not provided"}</Text>
-          </View>
+          <TouchableOpacity style={styles.option}>
+            <Ionicons name="settings-outline" size={22} color="#64748b" />
+
+            <Text style={styles.optionText}>Settings</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.option}>
+            <Ionicons name="help-circle-outline" size={22} color="#64748b" />
+
+            <Text style={styles.optionText}>Help & Support</Text>
+          </TouchableOpacity>
         </View>
-      </View>
 
-      {/* Account Settings */}
+        {/* Logout */}
 
-      <View style={styles.infoCard}>
-        <Text style={styles.sectionTitle}>Account</Text>
+        <TouchableOpacity onPress={handleLogout} style={styles.logout}>
+          <Ionicons name="log-out-outline" size={22} color="#fff" />
 
-        <TouchableOpacity style={styles.option}>
-          <Ionicons name="settings-outline" size={22} color="#64748b" />
-
-          <Text style={styles.optionText}>Settings</Text>
+          <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
-
-        <TouchableOpacity style={styles.option}>
-          <Ionicons name="help-circle-outline" size={22} color="#64748b" />
-
-          <Text style={styles.optionText}>Help & Support</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Logout */}
-
-      <TouchableOpacity onPress={handleLogout} style={styles.logout}>
-        <Ionicons name="log-out-outline" size={22} color="#fff" />
-
-        <Text style={styles.logoutText}>Logout</Text>
-      </TouchableOpacity>
-    </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
     backgroundColor: "#f8fafc",
+  },
+
+  container: {
     padding: 20,
+    paddingBottom: 120, // space above tab bar
   },
 
   title: {
@@ -114,19 +132,25 @@ const styles = StyleSheet.create({
 
   profileCard: {
     backgroundColor: "#ffffff",
-    borderRadius: 20,
+    borderRadius: 22,
     padding: 25,
     alignItems: "center",
+
     shadowColor: "#000",
     shadowOpacity: 0.08,
     shadowRadius: 10,
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+
     elevation: 4,
   },
 
   avatar: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
+    width: 95,
+    height: 95,
+    borderRadius: 50,
     backgroundColor: "#2563eb",
     alignItems: "center",
     justifyContent: "center",
@@ -135,7 +159,7 @@ const styles = StyleSheet.create({
 
   avatarText: {
     color: "#fff",
-    fontSize: 32,
+    fontSize: 34,
     fontWeight: "800",
   },
 
@@ -146,8 +170,9 @@ const styles = StyleSheet.create({
   },
 
   role: {
-    marginTop: 5,
+    marginTop: 6,
     color: "#64748b",
+    fontSize: 14,
   },
 
   infoCard: {
@@ -155,13 +180,18 @@ const styles = StyleSheet.create({
     marginTop: 20,
     padding: 20,
     borderRadius: 18,
+
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
 
   sectionTitle: {
     fontSize: 18,
     fontWeight: "700",
-    marginBottom: 15,
     color: "#0f172a",
+    marginBottom: 15,
   },
 
   row: {
@@ -172,15 +202,15 @@ const styles = StyleSheet.create({
   },
 
   label: {
-    fontSize: 13,
     color: "#64748b",
+    fontSize: 13,
   },
 
   value: {
+    marginTop: 3,
     fontSize: 16,
     fontWeight: "600",
     color: "#0f172a",
-    marginTop: 3,
   },
 
   option: {
@@ -200,6 +230,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#dc2626",
     padding: 16,
     borderRadius: 15,
+
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",

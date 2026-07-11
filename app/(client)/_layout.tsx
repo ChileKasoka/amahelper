@@ -1,13 +1,32 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
+import { Platform } from "react-native";
 
 export default function ClientLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
+
         tabBarActiveTintColor: "#2563eb",
         tabBarInactiveTintColor: "#64748b",
+
+        // Tab background
+        tabBarStyle: {
+          backgroundColor: "#ffffff",
+          borderTopWidth: 1,
+          borderTopColor: "#e2e8f0",
+
+          height: Platform.OS === "android" ? 70 : 85,
+
+          paddingBottom: Platform.OS === "android" ? 10 : 20,
+          paddingTop: 8,
+        },
+
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: "600",
+        },
       }}
     >
       <Tabs.Screen
