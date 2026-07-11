@@ -164,7 +164,22 @@ export const registerUser = async (data: RegisterPayload) => {
   }
 };
 
-export const loginUser = async (email: string, password: string) => {
+export interface LoginResponse {
+  token: string;
+  user: {
+    id: string;
+    firstName?: string;
+    lastName?: string;
+    email: string;
+    role: RoleType;
+    userType: UserType;
+  };
+}
+
+export const loginUser = async (
+  email: string,
+  password: string,
+): Promise<LoginResponse> => {
   const res = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: {
@@ -179,5 +194,5 @@ export const loginUser = async (email: string, password: string) => {
     throw new Error(responseText || "Login failed");
   }
 
-  return responseText;
+  return JSON.parse(responseText);
 };

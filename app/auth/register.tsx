@@ -60,7 +60,14 @@ export default function Register() {
   const renderStep = () => {
     if (!userType) {
       return (
-        <View style={{ alignItems: "center" }}>
+        <View
+          style={{
+            alignItems: "center",
+            backgroundColor: "#f9fafb",
+            flex: 1,
+            justifyContent: "center",
+          }}
+        >
           <Text style={styles.title}>Select Account Type</Text>
 
           <TouchableOpacity
@@ -262,7 +269,7 @@ export default function Register() {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: "#f9fafb", paddingBottom: 40 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       {renderStep()}

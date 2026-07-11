@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -15,7 +16,31 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [loading, setLoading] = useState(false);
+
+  const redirectUser = (userType: string) => {
+    switch (userType) {
+      case "CLIENT":
+        router.replace("/(client)");
+        break;
+
+      case "CLEANER":
+        router.replace("/(helper)");
+        break;
+
+      case "COMPANY_ADMIN":
+        router.replace("/(company)");
+        break;
+
+      case "SUPPLIER":
+        router.replace("/(supplier)");
+        break;
+
+      default:
+        router.replace("/auth/login");
+    }
+  };
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -26,27 +51,49 @@ export default function Login() {
     try {
       setLoading(true);
 
-      // backend endpoint
       const response = await fetch("http://192.168.1.177:8080/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({
+          email,
+          password,
+        }),
       });
 
       const data = await response.json();
+
+      console.log("LOGIN RESPONSE:", data);
 
       if (!response.ok) {
         throw new Error(data.message || "Login failed");
       }
 
-      // 👉 Save token later (AsyncStorage)
-      console.log("TOKEN:", data.token);
+      /**
+       * Expected backend response:
+       *
+       * {
+       *   token:"jwt-token",
+       *   user:{
+       *      id:"",
+       *      email:"",
+       *      userType:"CLIENT"
+       *   }
+       * }
+       *
+       */
 
-      // 🚀 Navigate to app
-      router.replace("/(tabs)/home");
+      await AsyncStorage.setItem("token", data.token);
+
+      await AsyncStorage.setItem("user", JSON.stringify(data.user));
+
+      console.log("USER TYPE:", data.user.userType);
+
+      redirectUser(data.user.userType);
     } catch (error: any) {
+      console.log("LOGIN ERROR:", error);
+
       Alert.alert("Login Failed", error.message);
     } finally {
       setLoading(false);
@@ -56,6 +103,7 @@ export default function Login() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>AmaHelpers</Text>
+
       <Text style={styles.subtitle}>Welcome back 👋</Text>
 
       <TextInput
@@ -83,7 +131,7 @@ export default function Login() {
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => router.push("/auth/register")}>
-        <Text style={styles.link}>Don’t have an account? Register</Text>
+        <Text style={styles.link}>Don't have an account? Register</Text>
       </TouchableOpacity>
     </View>
   );
@@ -96,17 +144,20 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: "center",
   },
+
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    marginBottom: 5,
     textAlign: "center",
+    marginBottom: 5,
   },
+
   subtitle: {
     textAlign: "center",
-    marginBottom: 30,
     color: "#64748b",
+    marginBottom: 30,
   },
+
   input: {
     backgroundColor: "#fff",
     padding: 15,
@@ -115,17 +166,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#e2e8f0",
   },
+
   button: {
     backgroundColor: "#0f172a",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
-    marginTop: 10,
   },
+
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
   },
+
   link: {
     marginTop: 20,
     textAlign: "center",
