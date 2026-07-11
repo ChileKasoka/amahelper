@@ -1,5 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import { router } from "expo-router";
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 /* ================= TYPES ================= */
 
@@ -85,7 +92,9 @@ export interface CompanyRegistration {
 }
 
 // Generic register data union
-export type RegisterData = Partial<ClientRegistration & HelperRegistration & CompanyRegistration>;
+export type RegisterData = Partial<
+  ClientRegistration & HelperRegistration & CompanyRegistration
+>;
 
 // Auth Context type
 export interface AuthContextType {
@@ -164,6 +173,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setToken(null);
       setUser(null);
       clearRegisterData();
+      console.log("Logged out successfully");
+
+      router.replace("/auth/login");
     } catch (err) {
       console.log("Logout error:", err);
     }

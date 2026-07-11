@@ -1,30 +1,25 @@
-import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 export default function HelperDashboard() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Helper Dashboard</Text>
+      <Text style={styles.title}>Welcome</Text>
+      <Text style={styles.subtitle}>Helper Dashboard</Text>
 
-      <Text style={styles.subtitle}>Manage jobs and services</Text>
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Today's Jobs</Text>
+        <Text>0 Assigned</Text>
+      </View>
 
-      <TouchableOpacity style={styles.card}>
-        <Text style={styles.cardTitle}>Available Jobs</Text>
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Upcoming Bookings</Text>
+        <Text>0 Upcoming</Text>
+      </View>
 
-        <Text>View cleaning requests near you</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.card}>
-        <Text style={styles.cardTitle}>My Jobs</Text>
-
-        <Text>Track accepted jobs</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.card}>
-        <Text style={styles.cardTitle}>Earnings</Text>
-
-        <Text>View payments and commissions</Text>
-      </TouchableOpacity>
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Current Balance</Text>
+        <Text>K0.00</Text>
+      </View>
     </View>
   );
 }
@@ -32,29 +27,26 @@ export default function HelperDashboard() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: "#f8fafc",
+    padding: 20,
   },
-
   title: {
     fontSize: 28,
-    fontWeight: "700",
+    fontWeight: "bold",
   },
-
   subtitle: {
-    marginVertical: 15,
     color: "#64748b",
+    marginBottom: 25,
   },
-
   card: {
     backgroundColor: "#fff",
-    padding: 20,
-    marginBottom: 15,
     borderRadius: 12,
+    padding: 18,
+    marginBottom: 15,
+    elevation: 2,
   },
-
   cardTitle: {
-    fontSize: 18,
     fontWeight: "700",
+    marginBottom: 5,
   },
 });
