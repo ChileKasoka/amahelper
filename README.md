@@ -95,13 +95,11 @@ Whether you're looking for a trusted helper, offering professional services, hir
   <img src="assets/images/3.jpeg" width="150" alt="Helper Profile">
 </p>
 
-### Booking & Requests
+### AmaHelper
 
 <p align="center">
   <img src="assets/images/amahq.png" width="150" alt="Bookings">
 </p>
-
-> Replace the images above with screenshots from your application.
 
 ---
 
