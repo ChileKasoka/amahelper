@@ -108,7 +108,7 @@ Whether you're looking for a trusted helper, offering professional services, hir
 - React Native
 - Expo
 - TypeScript
-- Firebase / Supabase (Backend)
+- JAVA
 - React Navigation
 - Expo Router
 - REST API
