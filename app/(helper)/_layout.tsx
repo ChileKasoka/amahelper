@@ -1,29 +1,27 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function HelperLayout() {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
 
-        // Active icon/text
         tabBarActiveTintColor: "#16a34a",
-
-        // Inactive
         tabBarInactiveTintColor: "#64748b",
 
-        // Tab styling
         tabBarStyle: {
           backgroundColor: "#ffffff",
-          height: 75,
 
-          // Android safe spacing
-          paddingBottom: 10,
+          // Automatically adapts to all Android/iOS devices
+          height: 60 + insets.bottom,
           paddingTop: 8,
+          paddingBottom: Math.max(insets.bottom, 8),
 
           borderTopWidth: 0,
-
           elevation: 10,
 
           shadowColor: "#000",
@@ -41,65 +39,50 @@ export default function HelperLayout() {
         },
       }}
     >
-      {/* Dashboard */}
-
       <Tabs.Screen
         name="index"
         options={{
           title: "Home",
-
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home-outline" size={size} color={color} />
           ),
         }}
       />
 
-      {/* Available Jobs */}
-
       <Tabs.Screen
         name="jobs"
         options={{
           title: "Jobs",
-
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="briefcase-outline" size={size} color={color} />
           ),
         }}
       />
 
-      {/* Schedule */}
-
       <Tabs.Screen
         name="calendar"
         options={{
           title: "Schedule",
-
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="calendar-outline" size={size} color={color} />
           ),
         }}
       />
 
-      {/* Earnings */}
-
       <Tabs.Screen
         name="earnings"
         options={{
           title: "Earnings",
-
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="wallet-outline" size={size} color={color} />
           ),
         }}
       />
 
-      {/* Profile */}
-
       <Tabs.Screen
         name="profile"
         options={{
           title: "Profile",
-
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person-circle-outline" size={size} color={color} />
           ),
