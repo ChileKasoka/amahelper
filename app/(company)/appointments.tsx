@@ -1,105 +1,101 @@
 import { Ionicons } from "@expo/vector-icons";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 
-const jobs = [
+const appointments = [
   {
     id: "1",
-    title: "House Cleaning",
     client: "Mary Banda",
+    service: "House Cleaning",
+    time: "10:00 AM",
     location: "Kabulonga",
-    helper: "John Cleaner",
-    status: "Assigned",
-    date: "Today 10:00 AM",
+    status: "Pending",
   },
 
   {
     id: "2",
-    title: "Laundry Service",
     client: "John Phiri",
-    location: "Woodlands",
-    helper: "Not Assigned",
-    status: "Pending",
-    date: "Tomorrow 09:00 AM",
+    service: "Laundry Service",
+    time: "02:00 PM",
+    location: "Lusaka East",
+    status: "Completed",
   },
 
   {
     id: "3",
-    title: "Deep Cleaning",
     client: "Sarah Zulu",
-    location: "Lusaka East",
-    helper: "Mary Helper",
-    status: "Completed",
-    date: "Yesterday",
+    service: "Deep Cleaning",
+    time: "04:30 PM",
+    location: "Woodlands",
+    status: "Upcoming",
   },
 ];
 
-export default function Jobs() {
+export default function Appointments() {
   return (
     <View style={styles.container}>
       {/* Header */}
 
       <View style={styles.header}>
-        <Text style={styles.title}>Jobs</Text>
+        <Text style={styles.title}>Appointments</Text>
 
         <Text style={styles.subtitle}>
-          Create, assign and monitor cleaning jobs
+          Manage client bookings and schedules
         </Text>
       </View>
 
-      {/* Statistics */}
+      {/* Summary */}
 
-      <View style={styles.stats}>
-        <View style={styles.statCard}>
-          <Ionicons name="briefcase-outline" size={28} color="#7c3aed" />
+      <View style={styles.summaryContainer}>
+        <View style={styles.summaryCard}>
+          <Ionicons name="calendar-outline" size={28} color="#7c3aed" />
 
-          <Text style={styles.number}>24</Text>
+          <Text style={styles.summaryNumber}>12</Text>
 
-          <Text style={styles.label}>Total</Text>
+          <Text style={styles.summaryLabel}>Today</Text>
         </View>
 
-        <View style={styles.statCard}>
-          <Ionicons name="time-outline" size={28} color="#f59e0b" />
+        <View style={styles.summaryCard}>
+          <Ionicons name="time-outline" size={28} color="#2563eb" />
 
-          <Text style={styles.number}>8</Text>
+          <Text style={styles.summaryNumber}>5</Text>
 
-          <Text style={styles.label}>Pending</Text>
+          <Text style={styles.summaryLabel}>Pending</Text>
         </View>
 
-        <View style={styles.statCard}>
+        <View style={styles.summaryCard}>
           <Ionicons name="checkmark-circle-outline" size={28} color="#16a34a" />
 
-          <Text style={styles.number}>16</Text>
+          <Text style={styles.summaryNumber}>7</Text>
 
-          <Text style={styles.label}>Done</Text>
+          <Text style={styles.summaryLabel}>Completed</Text>
         </View>
       </View>
 
-      {/* Job List */}
+      {/* Appointment List */}
 
       <FlatList
-        data={jobs}
+        data={appointments}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <View style={styles.card}>
             <View style={styles.cardHeader}>
-              <View style={styles.iconBox}>
-                <Ionicons name="sparkles-outline" size={25} color="#7c3aed" />
+              <View style={styles.avatar}>
+                <Text style={styles.avatarText}>{item.client.charAt(0)}</Text>
               </View>
 
               <View style={{ flex: 1 }}>
-                <Text style={styles.jobTitle}>{item.title}</Text>
+                <Text style={styles.name}>{item.client}</Text>
 
-                <Text style={styles.client}>{item.client}</Text>
+                <Text style={styles.service}>{item.service}</Text>
               </View>
 
               <View
                 style={[
                   styles.status,
-
                   item.status === "Completed" && styles.completed,
 
-                  item.status === "Pending" && styles.pending,
+                  item.status === "Upcoming" && styles.upcoming,
                 ]}
               >
                 <Text style={styles.statusText}>{item.status}</Text>
@@ -108,22 +104,16 @@ export default function Jobs() {
 
             <View style={styles.divider} />
 
-            <View style={styles.row}>
+            <View style={styles.infoRow}>
+              <Ionicons name="time-outline" size={18} color="#64748b" />
+
+              <Text style={styles.infoText}>{item.time}</Text>
+            </View>
+
+            <View style={styles.infoRow}>
               <Ionicons name="location-outline" size={18} color="#64748b" />
 
-              <Text style={styles.info}>{item.location}</Text>
-            </View>
-
-            <View style={styles.row}>
-              <Ionicons name="person-outline" size={18} color="#64748b" />
-
-              <Text style={styles.info}>Helper: {item.helper}</Text>
-            </View>
-
-            <View style={styles.row}>
-              <Ionicons name="calendar-outline" size={18} color="#64748b" />
-
-              <Text style={styles.info}>{item.date}</Text>
+              <Text style={styles.infoText}>{item.location}</Text>
             </View>
           </View>
         )}
@@ -152,15 +142,16 @@ const styles = StyleSheet.create({
   subtitle: {
     marginTop: 5,
     color: "#64748b",
+    fontSize: 15,
   },
 
-  stats: {
+  summaryContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 20,
   },
 
-  statCard: {
+  summaryCard: {
     backgroundColor: "#fff",
     width: "31%",
     padding: 15,
@@ -168,21 +159,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  number: {
+  summaryNumber: {
     fontSize: 22,
     fontWeight: "800",
     marginTop: 8,
+    color: "#0f172a",
   },
 
-  label: {
+  summaryLabel: {
     fontSize: 13,
     color: "#64748b",
+    marginTop: 4,
   },
 
   card: {
     backgroundColor: "#fff",
-    padding: 18,
     borderRadius: 20,
+    padding: 18,
     marginBottom: 15,
 
     shadowColor: "#000",
@@ -196,40 +189,46 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  iconBox: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+  avatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     backgroundColor: "#ede9fe",
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
   },
 
-  jobTitle: {
-    fontSize: 18,
+  avatarText: {
+    fontSize: 20,
     fontWeight: "800",
+    color: "#7c3aed",
+  },
+
+  name: {
+    fontSize: 17,
+    fontWeight: "700",
     color: "#0f172a",
   },
 
-  client: {
+  service: {
     color: "#64748b",
-    marginTop: 4,
+    marginTop: 3,
   },
 
   status: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: "#dbeafe",
-  },
-
-  pending: {
     backgroundColor: "#fef3c7",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 20,
   },
 
   completed: {
     backgroundColor: "#dcfce7",
+  },
+
+  upcoming: {
+    backgroundColor: "#dbeafe",
   },
 
   statusText: {
@@ -244,13 +243,13 @@ const styles = StyleSheet.create({
     marginVertical: 15,
   },
 
-  row: {
+  infoRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 8,
   },
 
-  info: {
+  infoText: {
     marginLeft: 10,
     color: "#475569",
     fontSize: 14,

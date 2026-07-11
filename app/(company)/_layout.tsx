@@ -6,45 +6,72 @@ export default function CompanyLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
+
         tabBarActiveTintColor: "#7c3aed",
+
+        tabBarInactiveTintColor: "#64748b",
+
+        tabBarStyle: {
+          backgroundColor: "#ffffff",
+          height: 70,
+          paddingBottom: 8,
+          paddingTop: 8,
+          borderTopWidth: 0,
+          elevation: 10,
+        },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: "Dashboard",
+
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="business" size={size} color={color} />
+            <Ionicons name="grid-outline" size={size} color={color} />
           ),
         }}
       />
 
       <Tabs.Screen
-        name="employees"
+        name="appointments"
         options={{
-          title: "Employees",
+          title: "Appointments",
+
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="people" size={size} color={color} />
+            <Ionicons name="calendar-outline" size={size} color={color} />
           ),
         }}
       />
 
       <Tabs.Screen
-        name="bookings"
+        name="helpers"
         options={{
-          title: "Bookings",
+          title: "Helpers",
+
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="calendar" size={size} color={color} />
+            <Ionicons name="people-outline" size={size} color={color} />
           ),
         }}
       />
 
       <Tabs.Screen
-        name="profile"
+        name="jobs"
         options={{
-          title: "Profile",
+          title: "Jobs",
+
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
+            <Ionicons name="briefcase-outline" size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="more"
+        options={{
+          title: "More",
+
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="menu-outline" size={size} color={color} />
           ),
         }}
       />

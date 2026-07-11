@@ -3,6 +3,7 @@
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -10,6 +11,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
+// API
+import { registerUser } from "@/api/auth";
 
 // CLIENT
 import ClientStep1 from "./ama_clients/client1";
@@ -41,6 +45,8 @@ export default function Register() {
 
   const [step, setStep] = useState(1);
 
+  const [loading, setLoading] = useState(false);
+
   const [clientData, setClientData] = useState<any>({});
 
   const [helperData, setHelperData] = useState<any>({});
@@ -57,18 +63,54 @@ export default function Register() {
     setStep((prev) => Math.max(prev - 1, 1));
   };
 
+  // ================= COMPANY SUBMIT =================
+
+  const submitCompany = async () => {
+    try {
+      setLoading(true);
+
+      const payload = {
+        ...companyData,
+
+        userType: "COMPANY_ADMIN",
+
+        role: "ADMIN",
+      };
+
+      console.log("COMPANY REGISTER:", JSON.stringify(payload, null, 2));
+
+      const response = await registerUser(payload);
+
+      console.log("REGISTER SUCCESS:", response);
+
+      Alert.alert("Success", "Company account created successfully", [
+        {
+          text: "Login",
+          onPress: () => {
+            router.replace("/auth/login");
+          },
+        },
+      ]);
+    } catch (error: any) {
+      console.log("REGISTER ERROR", error);
+
+      Alert.alert("Registration Failed", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const renderStep = () => {
+    // ================= ACCOUNT TYPE =================
+
     if (!userType) {
       return (
-        <View
-          style={{
-            alignItems: "center",
-            backgroundColor: "#f9fafb",
-            flex: 1,
-            justifyContent: "center",
-          }}
-        >
-          <Text style={styles.title}>Select Account Type</Text>
+        <View style={styles.container}>
+          <Text style={styles.title}>Create Account</Text>
+
+          <Text style={styles.subtitle}>
+            Choose how you want to use the platform
+          </Text>
 
           <TouchableOpacity
             style={styles.button}
@@ -77,7 +119,7 @@ export default function Register() {
               setStep(1);
             }}
           >
-            <Text style={styles.buttonText}>Hire Helper</Text>
+            <Text style={styles.buttonText}>Hire a Helper</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -97,7 +139,7 @@ export default function Register() {
               setStep(1);
             }}
           >
-            <Text style={styles.buttonText}>Company</Text>
+            <Text style={styles.buttonText}>Register Company</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -107,7 +149,7 @@ export default function Register() {
               setStep(1);
             }}
           >
-            <Text style={styles.buttonText}>Supplier</Text>
+            <Text style={styles.buttonText}>Become Supplier</Text>
           </TouchableOpacity>
         </View>
       );
@@ -220,10 +262,8 @@ export default function Register() {
               back={back}
               formData={companyData}
               setFormData={setCompanyData}
-              onSubmit={function (): Promise<void> {
-                throw new Error("Function not implemented.");
-              }}
-              loading={false}
+              onSubmit={submitCompany}
+              loading={loading}
             />
           );
       }
@@ -269,45 +309,62 @@ export default function Register() {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: "#f9fafb", paddingBottom: 40 }}
+      style={styles.wrapper}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       {renderStep()}
 
       <TouchableOpacity onPress={() => router.replace("/auth/login")}>
-        <Text style={styles.linkText}>Already have an account? Login</Text>
+        <Text style={styles.link}>Already have an account? Login</Text>
       </TouchableOpacity>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    backgroundColor: "#f8fafc",
+  },
+
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 15,
+    fontSize: 30,
+    fontWeight: "800",
     color: "#0f172a",
+    marginBottom: 10,
+  },
+
+  subtitle: {
+    color: "#64748b",
+    marginBottom: 30,
   },
 
   button: {
-    backgroundColor: "#3b82f6",
-    padding: 14,
-    borderRadius: 10,
-    alignItems: "center",
-    marginVertical: 5,
-    width: "80%",
+    width: "90%",
+    backgroundColor: "#2563eb",
+    padding: 16,
+    borderRadius: 14,
+    marginVertical: 8,
   },
 
   buttonText: {
     color: "#fff",
-    fontWeight: "bold",
+    fontWeight: "700",
+    textAlign: "center",
     fontSize: 16,
   },
 
-  linkText: {
+  link: {
     textAlign: "center",
-    marginTop: 20,
-    color: "#3b82f6",
-    fontWeight: "500",
+    margin: 20,
+    color: "#2563eb",
+    fontWeight: "600",
   },
 });

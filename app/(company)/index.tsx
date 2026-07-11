@@ -1,4 +1,4 @@
-import React from "react";
+import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, View } from "react-native";
 
 export default function CompanyDashboard() {
@@ -6,24 +6,30 @@ export default function CompanyDashboard() {
     <View style={styles.container}>
       <Text style={styles.title}>Company Dashboard</Text>
 
-      <Text style={styles.subtitle}>Manage your company operations</Text>
+      <Text style={styles.subtitle}>Manage your cleaning business</Text>
 
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Employees</Text>
+        <Ionicons name="people-outline" size={30} color="#7c3aed" />
 
-        <Text>Manage cleaners and staff</Text>
+        <Text style={styles.number}>25</Text>
+
+        <Text>Active Helpers</Text>
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Bookings</Text>
+        <Ionicons name="calendar-outline" size={30} color="#7c3aed" />
 
-        <Text>Manage customer requests</Text>
+        <Text style={styles.number}>12</Text>
+
+        <Text>Today's Appointments</Text>
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Reports</Text>
+        <Ionicons name="cash-outline" size={30} color="#7c3aed" />
 
-        <Text>Business analytics</Text>
+        <Text style={styles.number}>K5,400</Text>
+
+        <Text>Monthly Revenue</Text>
       </View>
     </View>
   );
@@ -32,29 +38,30 @@ export default function CompanyDashboard() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: "#f8fafc",
+    padding: 20,
   },
 
   title: {
     fontSize: 28,
-    fontWeight: "700",
+    fontWeight: "800",
   },
 
   subtitle: {
-    marginVertical: 15,
     color: "#64748b",
+    marginBottom: 20,
   },
 
   card: {
     backgroundColor: "#fff",
     padding: 20,
-    borderRadius: 12,
+    borderRadius: 20,
     marginBottom: 15,
   },
 
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: "700",
+  number: {
+    fontSize: 28,
+    fontWeight: "800",
+    marginVertical: 5,
   },
 });
